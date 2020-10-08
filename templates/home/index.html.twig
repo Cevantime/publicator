@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Impact factors{% endblock %}
+
+{% block body %}
+    <table class="table">
+        <thead>
+        <th>Rank</th>
+        <th>Journal</th>
+        <th>Impact factor</th>
+        </thead>
+        <tbody>
+            {% for insight in insights %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ insight.journal.name }}</td>
+                    <td>{{ insight.value }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
