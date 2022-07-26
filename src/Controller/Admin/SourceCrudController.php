@@ -19,7 +19,7 @@ class SourceCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        return [
+        $fields = [
             TextField::new('url'),
             TextField::new('selector'),
             TextareaField::new('script'),
@@ -32,6 +32,12 @@ class SourceCrudController extends AbstractCrudController
                 ->autocomplete()
                 ->setLabel('Insight'),
         ];
+
+        if($pageName === 'index') {
+            $fields = array_merge([IntegerField::new('id')], $fields);
+        }
+
+        return $fields;
     }
 
 }

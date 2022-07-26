@@ -7,7 +7,11 @@ namespace App\Scrapping;
 use App\Entity\Insight;
 use App\Entity\Source;
 use Doctrine\ORM\EntityManagerInterface;
-use Goutte\Client;
+use Facebook\WebDriver\Chrome\ChromeDriver;
+use Facebook\WebDriver\Remote\Service\DriverCommandExecutor;
+use Facebook\WebDriver\Remote\Service\DriverService;
+use Facebook\WebDriver\WebDriverExpectedCondition;
+use Symfony\Component\Panther\Client;
 
 class SourceScrapper
 {
@@ -29,21 +33,42 @@ class SourceScrapper
 
     public function scrapSource(Source $source)
     {
-        $client = new Client();
-        $crawler = $client->request('GET', (string)$source->getUrl());
+        $client = Client::createChromeClient(null, [
+            '--user-agent=Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0',
+            '--headless',
+            '--window-size=1200,1100',
+            '--disable-gpu',
+            '--no-sandbox'
+        ]);
+        $crawler = $client->request('GET', $source->getUrl());
 
-        if($source->getSelector()) {
-            $crawler = $crawler->filter($source->getSelector());
+        if ($source->getScript()) {
+            $client->executeScript($source->getScript());
+        }
+
+        if (($selector = $source->getSelector())) {
+            $client->waitFor($selector);
+            $client->refreshCrawler();
+            $crawler = $client->getCrawler();
+            $crawler = $crawler->filter($selector);
+        }
+
+        if ($crawler->count() == 0) {
+            throw new \Exception("Could not fetch the selected source {$source->getId()}");
         }
 
         $text = $crawler->text();
 
-        if($source->getRegex()) {
-            if(preg_match($source->getRegex(), $text, $matches)) {
+        if ($source->getRegex()) {
+            if (preg_match($source->getRegex(), $text, $matches)) {
                 $text = $matches[$source->getRegexCaptureGroup()];
             }
         }
+
         $result = trim($text);
+        if (!$text) {
+            throw new \Exception("Source {$source->getId()} returned an empty result");
+        }
         $insight = new Insight();
         $insight->setDate(new \DateTime());
         $insight->setJournal($source->getJournal());

@@ -56,7 +56,12 @@ class FetchSourcesCommand extends Command
         $progressBar->display();
 
         foreach ($sources as $source) {
-            $this->sourceScrapper->scrapSource($source);
+            try {
+                $this->sourceScrapper->scrapSource($source);
+            } catch (\Exception $exception) {
+                $io->warning($exception->getMessage() .' source id '.$source->getId());
+
+            }
             $progressBar->advance();
         }
 

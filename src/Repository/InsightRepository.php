@@ -32,7 +32,7 @@ class InsightRepository extends ServiceEntityRepository
                 INNER JOIN journal j ON i.journal_id = j.id
                 INNER JOIN insight_type it ON it.id = i.type_id
                 INNER JOIN (
-                    SELECT ii.journal_id as jId, MAX(ii.id) as maxId FROM insight ii WHERE ii.type_id = 1 GROUP BY jId
+                    SELECT ii.journal_id as jId, MAX(ii.id) as maxId FROM insight ii WHERE ii.type_id = :type_id GROUP BY jId
                 ) s ON i.journal_id = s.jId and i.id = s.maxId
             WHERE i.type_id = :type_id ORDER BY CAST(value1 as FLOAT) DESC', $rsm);
         $nativeQuery->setParameter('type_id', $type->getId());

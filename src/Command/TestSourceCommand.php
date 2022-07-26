@@ -40,7 +40,7 @@ class TestSourceCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Add a short description for your command')
+            ->setDescription('Test a source')
             ->addArgument('sourceId', InputArgument::REQUIRED, 'The Id of the source')
         ;
     }
@@ -55,10 +55,10 @@ class TestSourceCommand extends Command
         if(!$source) {
             $io->error('No source for id ' . $sourceId);
         }
-
+        $millis = floor(microtime(true) * 1000);;
         $result = $this->sourceScrapper->scrapSource($source);
-
-        $io->success('Source tested ! Result '.$result);
+        $millis2 = floor(microtime(true) * 1000);;
+        $io->success('Source tested ! Result '.$result. ' (took '.($millis2 - $millis).'ms)');
 
         return 0;
     }

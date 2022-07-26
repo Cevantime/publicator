@@ -3,11 +3,12 @@
 {% block title %}Impact factors{% endblock %}
 
 {% block body %}
+    <h1>{{ insight_type.name }}</h1>
     <table class="table">
         <thead>
         <th>Rank</th>
         <th>Journal</th>
-        <th>Impact factor</th>
+        <th>{{ insight_type.name }}</th>
         </thead>
         <tbody>
             {% for insight in insights %}

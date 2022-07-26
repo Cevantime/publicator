@@ -15,9 +15,6 @@ class HomeController extends AbstractController
     public function index(InsightRepository $insightRepository, InsightTypeRepository $insightTypeRepository)
     {
         $insightImpact = $insightTypeRepository->findOneBy(['name'=>'Impact factor']);
-        $insigths = $insightRepository->getLastByType($insightImpact);
-        return $this->render('home/index.html.twig', [
-            'insights' => $insigths,
-        ]);
+        return $this->redirectToRoute('app_insight_details', ['id' => $insightImpact->getId()]);
     }
 }

@@ -22,10 +22,12 @@ class DashboardController extends AbstractDashboardController
     public function index(): Response
     {
         return parent::index();
+
     }
 
     public function configureDashboard(): Dashboard
     {
+
         return Dashboard::new()
             ->setTitle('Publicator');
     }
